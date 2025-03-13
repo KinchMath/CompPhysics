@@ -1,5 +1,12 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy
+from scipy.integrate import odeint
 
+"""
+odeint(func, y0, t)
+Parameters : 
+model– The ODE  
+y0– Initial value of Y 
+t– Time space for which we want the curve(basically the range of x) 
+"""

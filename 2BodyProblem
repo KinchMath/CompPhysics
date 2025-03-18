@@ -10,3 +10,41 @@ model– The ODE
 y0– Initial value of Y 
 t– Time space for which we want the curve(basically the range of x) 
 """
+
+# Constants in terms of Years, Astronomical Units, Solar Mass
+G = 58.9639
+M_Sun = 1
+Eccentricity = 0.1671123
+SemiMajAxis = 1
+Aphelion = 1.1671123
+y0 = 0
+x0 = Aphelion
+vx0 = 0
+vy0 = np.sqrt(G * M_Sun * ((1-e)/Aphelion))
+
+def Two_Body(t , state, G, M_Sun):
+x, y, vx, vy = state
+r = np.sqrt(x**2 + y**2)
+ax = -G * M_Sun * x / r**3
+ay = -G * M_Sun * y / r**3
+return[vx,vy, ax, ay]
+
+t_end = 10000
+steps = 100000
+t = np.linspace(0, t_end, steps)
+
+initial_conditions = [x0, y0, vx0, vy0]
+
+solution = odeint(two_body, initial_conditions, t, args = (G, M_Sun), rtol = 1e-9, atol = 1e-9)
+
+x_sol = solutiom[:, 0]
+y_sol = solution[:, 1]
+
+plt.figure(figsize(8,8))
+plt.plot(x_sol, y_sol, label = "Earths Orbit")
+plt.plot(0, 0, 'y0', markersize=10, label="Sun")
+plt.legend()
+plt.grid()
+plt.show()
+
+

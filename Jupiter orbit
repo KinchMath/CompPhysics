@@ -1,0 +1,50 @@
+from scipy.integrate import odeint
+import numpy as np 
+import matplotlib.pyplot as plt
+
+M = 1 
+E = 0.048775 
+G = 58.9639  
+# the elliptical boundary is within the dunction of
+def func(s, t):  
+    """
+    
+
+    Parameters
+    ----------
+    s : TYPE
+        DESCRIPTION.
+    t : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    ysecond : TYPE
+        DESCRIPTION.
+
+    """
+    
+ 
+    x, y, Vx, Vy = s 
+    r = (x**2 + y**2)**(1/2)
+    ysecond = G*M*y/r**3 
+    xsecond = G*M*x/r**3  
+    return [Vx, Vy, xsecond, ysecond]
+major = 5.204267
+ymin = 4.950429 
+major = 5.204267      
+Vyvalue = 0
+Vxvalue = (G * M * ((1+E)/ymin))**(1/2)
+xin = 0 
+z =[ xin, ymin, Vxvalue, Vyvalue]
+t = np.linspace(0, 11.86, 100000)  
+integral = odeint(func, z, t) 
+x = integral[:,0] 
+y= integral[:,1] 
+print(x) 
+print(y) 
+print(Vxvalue)
+plt.plot(x, y)  
+plt.title('orbit')
+plt.xlabel('x value') 
+plt.ylabel('y value') 

@@ -1,0 +1,5 @@
+derivation of second order differential into first order 
+from mp354 note 7 
+y"x = f(x,y) 
+into two first order 
+dy/dx = z(x) and dz/dx = f(x, y)

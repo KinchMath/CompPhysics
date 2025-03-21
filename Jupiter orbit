@@ -33,8 +33,9 @@ def func(s, t):
 major = 5.204267
 ymin = 4.950429 
 major = 5.204267      
-Vyvalue = 0
-Vxvalue = (G * M * ((1+E)/ymin))**(1/2)
+Vyvalue = 0 
+# vis visa equation to make the orbit elliptic
+Vxvalue = np.sqrt((G * M*((2/ymin)-1/major)))
 xin = 0 
 z =[ xin, ymin, Vxvalue, Vyvalue]
 t = np.linspace(0, 11.86, 100000)  

@@ -20,7 +20,7 @@ Aphelion = 1.1671123
 y0 = 0
 x0 = Aphelion
 vx0 = 0
-vy0 = np.sqrt(G * M_Sun * ((1-e)/Aphelion))
+vy0 = np.sqrt(G * M_Sun * ((1-Eccentricity)/Aphelion))
 
 def Two_Body(t , state, G, M_Sun):
 x, y, vx, vy = state

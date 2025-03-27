@@ -1,51 +1,137 @@
 from scipy.integrate import odeint
 import numpy as np 
 import matplotlib.pyplot as plt
-
 M = 1 
 E = 0.048775 
 G = 58.9639  
 # the elliptical boundary is within the dunction of
 def func(s, t):  
     """
-    
 
-    Parameters
-    ----------
-    s : TYPE
-        DESCRIPTION.
-    t : TYPE
-        DESCRIPTION.
-
-    Returns
-    -------
-    ysecond : TYPE
-        DESCRIPTION.
 
     """
     
  
     x, y, Vx, Vy = s 
-    r = (x**2 + y**2)**(1/2)
-    ysecond = G*M*y/r**3 
-    xsecond = G*M*x/r**3  
+    r = (x**2 + y**2)**(1/2) 
+    ysecond = -G*M*y/r**3 
+    xsecond = -G*M*x/r**3  
     return [Vx, Vy, xsecond, ysecond]
-major = 5.204267
+ 
+def earth(se, t):  
+    """
+
+
+    """
+    
+ 
+    xe, ye, Vxe, Vye = se 
+    re = (xe**2 + ye**2)**(1/2) 
+    yesecond = -G*M*ye/re**3 
+    xesecond = -G*M*xe/re**3  
+    return [Vxe, Vye, xesecond, yesecond] 
+
+xmax = 1.1671123 
+yeint= 0
+major_e = 1 
+e = 0.1671123
+Vyevalue = np.sqrt((G * M*((2*(1-e)/major_e)-1/major_e)))
+Vxevalue = 0
+te = np.linspace(0,1)
+ze = [xmax, yeint, Vxevalue, Vyevalue] 
+integralearth = odeint(earth, ze, te, rtol = 1e-6, atol = 1e-5 )
+xe = integralearth[:, 0]
+ye = integralearth[:, 1] 
+Vye = integralearth[:, 3] 
+Vxe = integralearth[:, 2]
+re = (xe**2 + ye**2)**(1/2) 
+print(xe) 
+plt.plot(xe, ye)
+
+E = 0.048775
 ymin = 4.950429 
 major = 5.204267      
-Vyvalue = 0 
-# vis visa equation to make the orbit elliptic
-Vxvalue = np.sqrt((G * M*((2/ymin)-1/major)))
+Vyvalue = 0
+Vxvalue = np.sqrt((G * M*((2*(1+E)/major)-1/major)))
 xin = 0 
-z =[ xin, ymin, Vxvalue, Vyvalue]
-t = np.linspace(0, 11.86, 100000)  
+z =[xin, ymin, Vxvalue, Vyvalue]
+t =np.linspace(0,11.859)  
 integral = odeint(func, z, t) 
 x = integral[:,0] 
 y= integral[:,1] 
+vx = integral[:, 2]  
+vy = integral[:, 3]
 print(x) 
 print(y) 
 print(Vxvalue)
 plt.plot(x, y)  
-plt.title('orbit')
+plt.title('orbit') 
+r =np.sqrt(x**2+y**2) 
+print(r)
 plt.xlabel('x value') 
 plt.ylabel('y value') 
+plt.scatter(0,0) 
+plt.grid()
+plt.show()  
+ 
+mearth = 1/332950*M 
+mjupiter = 1/1048*M
+rd = np.sqrt((xe-x)**2 + (ye-y)**2) 
+rj =np.sqrt(x**2+y**2)
+  
+ 
+xmax3 = xmax 
+yeint3 = yeint 
+Vyevalue3 = Vyvalue
+Vxevalue3 = 0
+ 
+ymin3 = ymin 
+Vyvalue3 = 0
+Vxvalue3 = Vxvalue 
+xint3 = 0
+
+def couplex1(vx2, t): 
+    """
+
+    Returns
+    -------
+    None.
+
+    """ 
+    dvx1dt = -G*M*xe/re**3 - G*mjupiter*(xe-x)/rd**3 
+    return dvx1dt 
+dvx = Vxe 
+Velocityx = odeint(couplex1, dvx, t) 
+ 
+def couple3(vjx, t): 
+    """
+
+
+    """ 
+    dvjxdt = -G*M*x/rj**3 + G*mearth*(xe-x)/rd**3 
+    return(dvjxdt) 
+  
+t = np.linspace(0, 1) 
+dvxj = vx 
+velocityxj = odeint(couple3, dvxj, t)
+     
+def couple4(vjy, t): 
+    """
+
+    """  
+    dvjydt = -G*M*y/rj**3 + G*mearth*(ye-y)/rd**3 
+    return(dvjydt) 
+
+dvyj = vy  
+velocityyj = odeint(couple4, dvyj, t)     
+ 
+def coupley1(vy2, t): 
+    """
+
+
+    """  
+    dvy1dt = -G*M*ye/r**3 - G*mjupiter*(ye-y)/rd**3  
+    return(dvy1dt)   
+t1 = np.linspace(0, 1)  
+dvy = Vye
+Velocityy = odeint(coupley1, dvy, t1) 

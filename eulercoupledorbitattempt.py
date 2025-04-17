@@ -1,0 +1,126 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 14 13:10:14 2025
+
+@author: bendo
+
+note: having issues with memory euler attempt seems inefficient as accurate results are at very high precisions
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+
+def earthorb(coords,t):
+    xe,ye,xj,yj,vxe,vye,vxj,vyj=coords
+    
+    # defining needed constants
+    G=58.9639
+    M=1
+    
+    Mj=10*(1/1048)*M
+    Me=(1/332950)*M
+    
+    # time step 
+    dt= (np.max(t)-np.min(t))/len(t)
+    
+    # create arrays for variables  
+    xebox = np.zeros(len(t)) # earth x pos
+    vxebox = np.zeros(len(t)) # earth vx
+    wxebox = np.zeros(len(t)) # earth x acceleration
+    
+    yebox = np.zeros(len(t)) # earth y pos
+    vyebox = np.zeros(len(t)) # earth vy
+    wyebox = np.zeros(len(t)) # earth y acceleration
+    
+    xjbox = np.zeros(len(t)) # jup x pos
+    vxjbox = np.zeros(len(t)) # jup vx 
+    wxjbox = np.zeros(len(t)) # jup x acceleration
+    
+    yjbox = np.zeros(len(t)) # jup y pos
+    vyjbox = np.zeros(len(t)) # jup vy
+    wyjbox = np.zeros(len(t)) # jup y acceleration
+    
+    for i in np.arange((len(t))):
+        #  initial condition value assigning
+        if i == 0:
+            xebox[i] = xe
+            yebox[i] = ye
+            
+            vxebox[i] = vxe
+            vyebox[i] = vye
+            
+            xjbox[i] = xj
+            yjbox[i] = yj
+            
+            vxjbox[i] = vxj
+            vyjbox[i] = vyj
+            
+            re=(np.sqrt((xebox[i]-xjbox[i])**2+(yebox[i]-yjbox[i])**2))**3
+            wxebox[i] = -G*(M*xebox[i]/((np.sqrt(xebox[i]**2+yebox[i]**2))**(3))+Mj*(xebox[i]-xjbox[i])/(re))
+            wyebox[i] = -G*(M*yebox[i]/((np.sqrt(xebox[i]**2+yebox[i]**2))**(3))+Mj*(yebox[i]-yjbox[i])/(re))
+            
+            wxjbox[i] = -G*(M*xjbox[i]/((np.sqrt(xjbox[i]**2+yjbox[i]**2))**(3))-Mj*(xebox[i]-xjbox[i])/(re))
+            wyjbox[i] = -G*(M*yjbox[i]/((np.sqrt(xjbox[i]**2+yjbox[i]**2))**(3))-Mj*(yebox[i]-yjbox[i])/(re))
+        # assigning variable values for iteration i
+        else:
+            xebox[i] = xebox[i-1]+dt*vxebox[i-1]
+            yebox[i] = yebox[i-1]+dt*vyebox[i-1]
+            
+            xjbox[i] = xjbox[i-1]+dt*vxjbox[i-1]
+            yjbox[i] = yjbox[i-1]+dt*vyjbox[i-1]
+            
+            vxebox[i] = vxebox[i-1]+dt*wxebox[i-1]
+            vyebox[i] = vyebox[i-1]+dt*wyebox[i-1]
+            
+            vxjbox[i] = vxjbox[i-1]+dt*wxjbox[i-1]
+            vyjbox[i] = vyjbox[i-1]+dt*wyjbox[i-1]
+            
+            
+            re=(np.sqrt((xebox[i]-xjbox[i])**2+(yebox[i]-yjbox[i])**2))**3
+            wxebox[i] = -G*(M*xebox[i]/((np.sqrt(xebox[i]**2+yebox[i]**2))**(3))+Mj*(xebox[i]-xjbox[i])/(re))
+            wyebox[i] = -G*(M*yebox[i]/((np.sqrt(xebox[i]**2+yebox[i]**2))**(3))+Mj*(yebox[i]-yjbox[i])/(re))
+            
+            wxjbox[i] = -G*(M*xjbox[i]/((np.sqrt(xjbox[i]**2+yjbox[i]**2))**(3))-Mj*(xebox[i]-xjbox[i])/(re))
+            wyjbox[i] = -G*(M*yjbox[i]/((np.sqrt(xjbox[i]**2+yjbox[i]**2))**(3))-Mj*(yebox[i]-yjbox[i])/(re))
+            
+            # percentage print in case of rly big numbers so you can see how long its taking
+            j=t[i]/np.max(t)*100
+            print(j)
+            
+    # completed array values
+    p=xebox,yebox, xjbox, yjbox, vxebox, vyebox, vxjbox, vyjbox, wxebox, wyebox, wxjbox, wyjbox
+    return p
+
+
+# variable definitions e refers to earth j refers to jupiter
+G=58.9639
+Eccentricity = 0.01671123 # earth eccentricity
+M=1
+Aphelione= 1.016714
+evy0 = np.sqrt(G*M*((1-Eccentricity)/Aphelione))
+
+Aphelionj = 5.4570495969
+jsm=5.204267
+ej=0.048775 # jupiter eccentricity
+jvx0 = np.sqrt((G*M*((2*(1+ej)/jsm)-1/jsm)))
+
+# starting conditions xe,ye,xj, yj, vxe, vye, vxj, vyj
+start=[Aphelione,0,0, Aphelionj, 0, evy0, jvx0,0]
+
+#time array
+t=np.linspace(0, 11.859,99999)
+
+# sorting arrays into seperate values
+a, b, c, d, e, f, g, h, i, j, k ,l = earthorb(start, t)
+
+#graphing
+plt.plot(0,0,'ro', label='sun') # sun pos (might be wrong)
+plt.plot(a,b, label="earthorb") # earth
+plt.plot(c,d, label="juporb") # jupiter
+plt.xlabel("x")
+plt.ylabel("y")
+plt.grid()
+plt.legend()
+plt.title("Jup-Earth Orbit prec:{}".format(len(t)))
+plt.show()

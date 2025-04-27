@@ -1,0 +1,197 @@
+import numpy as np
+import matplotlib.pyplot as plt
+ 
+G = 58.9639  
+M = 1
+e = 0.01671123
+E = 0.048775 
+mjupiter = (1/104.8)*M  
+mearth = (1/332950)*M 
+major_e = 1 
+major = 5.204267 
+ 
+def x0first_order(xearth, xjupiter, yearth, yjupiter, t): 
+    """
+
+
+    """ 
+   
+    r =np.sqrt(xearth**2+yearth**2)
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2) 
+    xsecondearth =  (-G*M*xearth/r**3) - (G*mjupiter*(xearth-xjupiter)/rd**3)
+    
+    
+    return xsecondearth 
+ 
+def y0first_order(xearth, xjupiter, yearth, yjupiter, t): 
+    """
+
+
+    """
+   
+    r =np.sqrt(xearth**2+yearth**2)
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2) 
+    ysecondearth = -G*M*yearth/r**3 - G*mjupiter*(yearth-yjupiter)/rd**3 
+     
+    return ysecondearth 
+ 
+def x0jfirstorder(xearth, xjupiter, yearth, yjupiter, t): 
+    """
+
+    """ 
+    
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2) 
+    rj =np.sqrt(xjupiter**2+yjupiter**2)
+    xsecondjupiter = -G*M*xjupiter/rj**3 + G*mearth*(xearth-xjupiter)/rd**3
+      
+    return xsecondjupiter
+
+def y0jfirstorder( xearth, xjupiter, yearth, yjupiter, t): 
+    """
+
+    """
+
+    rd = np.sqrt((xearth - xjupiter)**2 +(yearth - yjupiter)**2) 
+    rj = np.sqrt(xjupiter**2 + yjupiter**2) 
+    ysecondjupiter = -G*M*yjupiter/rj**3 + G*mearth*(yearth-yjupiter)/rd**3 
+     
+    return ysecondjupiter
+    
+    
+def runge_kutta(s, t, xearth0, xjupiter0, yearth0, yjupiter0, vx0, vy0, vxj0, vyj0):
+    """
+def runge_kutta(xearth, xjupiter, yearth, yjupiter, vxearth, vyearth, vxjupiter, vyjupiter, s, t): 
+
+    -------
+    None.
+
+    """  
+    N = len(t) 
+    xearth = np.zeros(N) 
+    yearth = np.zeros(N) 
+    xjupiter = np.zeros(N) 
+    yjupiter = np.zeros(N) 
+    vx = np.zeros(N) 
+    vy = np.zeros(N)
+    vxj = np.zeros(N)
+    vyj = np.zeros(N) 
+     
+    xearth[0] = xearth0 
+    yearth[0] = yearth0
+    xjupiter[0] = xjupiter0 
+    yjupiter[0] = yjupiter0 
+    vx[0] = vx0 
+    vy[0] = vy0 
+    vxj[0] = vxj0 
+    vyj[0] = vyj0
+     
+    for i in range(N-1):
+
+         s1 = x0first_order(xearth[i], xjupiter[i], yearth[i], yjupiter[i], t[i]) 
+         s2 = x0first_order(xearth[i]+s*s1/2, xjupiter[i]+s*s1/2, yearth[i]+s*s1/2, yjupiter[i]+s*s1/2, t[i]+ s/2)
+         s3 = x0first_order(xearth[i]+s*s2/2, xjupiter[i]+s*s2/2, yearth[i]+s*s2/2,   yjupiter[i]+s*s2/2, t[i] + s/2) 
+         s4 = x0first_order(xearth[i]+s3*s, xjupiter[i]+s3*s, yearth[i]+s3*s,  yjupiter[i]+s3*s, t[i] + s) 
+        
+      
+         vx[i+1] = vx[i]+ (s/6)*(s1 +2*s2 + 2*s3 +s4)
+
+         s1x = vx[i]
+         s2x = vx[i]+s*s1x/2 
+         s3x = vx[i]+s*s2x/2 
+         s4x = vx[i]+s*s3x  
+         
+         xearth[i+1] = xearth[i] + (s/6)*(s1x +2*s2x +2*s3x +s4x)
+
+         k1 = y0first_order(xearth[i],  xjupiter[i], yearth[i], yjupiter[i], t[i])
+         k2 = y0first_order(xearth[i]+s*k1/2,xjupiter[i]+s*k1/2, yearth[i]+s*k1/2,  yjupiter[i]+s*k1/2, t[i] + s/2) 
+         k3 = y0first_order(xearth[i]+s*k2/2, xjupiter[i]+s*k2/2, yearth[i]+s*k2/2, yjupiter[i]+s*k2/2, t[i] + s/2) 
+         k4 = y0first_order(xearth[i]+s*k3, xjupiter[i]+s*k3, yearth[i]+s*k3, yjupiter[i]+s*k3, t[i] + s)
+          
+         vy[i+1] = vy[i] + (s/6)*(k1 +2*k2 + 2*k3 +k4) 
+
+         k1x = vy[i] 
+         k2x = vy[i]+s/2*k1x 
+         k3x = vy[i]+s/2*k2x 
+         k4x = vy[i]+s*k3x  
+     
+         yearth[i+1] = yearth[i] + (s/6)*(k1x+ 2*k2x + 2*k3x +k4x)
+
+         h1 = x0jfirstorder(xearth[i], xjupiter[i], yearth[i], yjupiter[i],t[i])
+         h2 = x0jfirstorder(xearth[i]+s*h1/2, xjupiter[i]+s*h1/2, yearth[i]+s*h1/2,  yjupiter[i]+s*h1/2, t[i] + s/2) 
+         h3 = x0jfirstorder(xearth[i]+s*h2/2, xjupiter[i]+s*h2/2, yearth[i]+s*h2/2,  yjupiter[i]+s*h2/2, t[i] + s/2) 
+         h4 = x0jfirstorder(xearth[i]+s*h3, xjupiter[i]+s*h3, yearth[i]+s*h3, yjupiter[i]+s*h3, t[i] + s)
+        
+         
+         vxj[i+1] = vxj[i] + (s/6)*(h1 + 2*h2 + 2*h3 +h4) 
+
+         h1x = vxj[i] 
+         h2x = vxj[i]+(s/2)*h1x 
+         h3x = vxj[i]+(s/2)*h2x 
+         h4x = vxj[i]+s*h3x 
+          
+         xjupiter[i+1] = xjupiter[i] + (s/6)*(h1x + 2*h2x + 2*h3x +h4x)
+
+         l1 = y0jfirstorder(xearth[i], xjupiter[i], yearth[i], yjupiter[i],t[i]) 
+         l2 = y0jfirstorder(xearth[i]+s*l1/2, xjupiter[i]+s*l1/2, yearth[i]+s*l1/2,  yjupiter[i]+s*l1/2, t[i] + s/2) 
+         l3 = y0jfirstorder(xearth[i]+s*l2/2, xjupiter[i]+s*l2/2, yearth[i]+s*l2/2, yjupiter[i]+s*l2/2, t[i] + s/2) 
+         l4 = y0jfirstorder(xearth[i]+s*l3, xjupiter[i]+s*l3, yearth[i]+s*l3, yjupiter[i]+s*l3, t[i] + s)
+         
+         vyj[i+1] = vyj[i] + (s/6)*(l1 + 2*l2 + 2*l3 +l4) 
+         
+         l1x = vyj[i] 
+         l2x = vyj[i]+s/2*l1x 
+         l3x = vyj[i]+s/2*l2x 
+         l4x = vyj[i]+s*l3x 
+         
+     
+         yjupiter[i+1] = yjupiter[i] + (s/6)*(l1x + 2*l2x + 2*l3x +l4x) 
+          
+         j=t[i]/np.max(t)*100
+         print(j)
+          
+         
+         #if xearth >= 1.016171123: 
+            # s += 1e-4
+             #print('x at steps{}'.format(n))
+     
+    
+    return xearth, yearth, xjupiter, yjupiter, vx, vy, vxj, vyj 
+ 
+
+ 
+x0 = 1.01671123  
+y0 = 0 
+x0jupiter = 0 
+y0jupiter = 4.950429 
+vx0 = 0 
+vy0 = np.sqrt((G*M*((2*(1-e)/major_e)-1/major_e)))
+vx0jupiter = np.sqrt((G*M*((2*(1+E)/major)-1/major)))
+vy0jupiter = 0
+
+initial_value = x0, y0, x0jupiter, y0jupiter, vx0, vy0, vx0jupiter, vy0jupiter 
+ 
+ 
+tmax = 600
+tmin = 0
+dt = int(10000*tmax)
+t = np.linspace(tmin, tmax, dt)  
+s = (tmax - tmin)/dt
+N = len(t) 
+step = (tmax -tmin)/N  
+check = 0
+variables1 = runge_kutta(step, t, x0, x0jupiter, y0, y0jupiter, vx0, vy0, vx0jupiter, vy0jupiter) 
+ 
+         
+plt.plot(variables1[0], variables1[1], label='earthorb') 
+plt.plot(variables1[2], variables1[3], label='jupiterorb')    
+plt.scatter(0,0, label='sun') 
+plt.grid() 
+plt.legend()
+plt.xlabel('xvalue')
+plt.ylabel('yvalue') 
+plt.title('couple orbit')
+  
+#plt.figure() 
+#plt.plot(plt.plot(t,variables1[0])) 
+#plt.grid 
+#plt.xlabel('xearth')

@@ -1,0 +1,160 @@
+import numpy as np
+import matplotlib.pyplot as plt
+ 
+G = 58.9639  
+M = 1
+e = 0.01671123
+E = 0.048775 
+mjupiter = (1/104.8)*M  
+mearth = (1/332950)*M 
+major_e = 1 
+major = 5.204267 
+ 
+xearth = 1.01671123  
+yearth = 0 
+xjupiter = 0 
+yjupiter = 4.950429 
+vx = 0 
+vy = np.sqrt((G*M*((2*(1-e)/major_e)-1/major_e)))
+vxjupiter = np.sqrt((G*M*((2*(1+E)/major)-1/major)))
+vyjupiter = 0
+
+   
+ 
+ 
+dt = 0.0001 
+time_interval = np.arange(0,100,0.0001) 
+N = len(time_interval) 
+ 
+r = np.sqrt(xearth**2+yearth**2)
+rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2)  
+rj =np.sqrt(xjupiter**2+yjupiter**2)
+xsecondearth =  (-G*M*xearth/r**3) - (G*mjupiter*(xearth-xjupiter)/rd**3)
+ysecondearth = -G*M*yearth/r**3 - G*mjupiter*(yearth-yjupiter)/rd**3 
+xsecondjupiter = -G*M*xjupiter/rj**3 + G*mearth*(xearth-xjupiter)/rd**3
+ysecondjupiter = -G*M*yjupiter/rj**3 + G*mearth*(yearth-yjupiter)/rd**3  
+ 
+vx2 = vx + 0.5*dt*xsecondearth 
+vy2 = vy + 0.5*dt*ysecondearth 
+vxj2 = vxjupiter + 0.5*dt*xsecondjupiter 
+vyj2 = vyjupiter + 0.5*dt*ysecondjupiter
+
+
+x = np.zeros(N) 
+y = np.zeros(N) 
+xj = np.zeros(N) 
+yj = np.zeros(N)
+vx1 = np.zeros(N) 
+vy1 = np.zeros(N) 
+vxj1 = np.zeros(N)
+Vyj1 = np.zeros(N)
+  
+for i in range(N): 
+
+    xearth = xearth + vx2*dt
+    yearth = yearth + vy2*dt
+    xjupiter = xjupiter + vxj2*dt 
+    yjupiter = yjupiter + vyj2*dt 
+    
+    r = np.sqrt(xearth**2+yearth**2)
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2)  
+    rj =np.sqrt(xjupiter**2+yjupiter**2)
+    xsecondearth =  (-G*M*xearth/r**3) - (G*mjupiter*(xearth-xjupiter)/rd**3)
+    ysecondearth = -G*M*yearth/r**3 - G*mjupiter*(yearth-yjupiter)/rd**3 
+    xsecondjupiter = -G*M*xjupiter/rj**3 + G*mearth*(xearth-xjupiter)/rd**3
+    ysecondjupiter = -G*M*yjupiter/rj**3 + G*mearth*(yearth-yjupiter)/rd**3  
+
+     
+    vx2 = vx2 + xsecondearth*dt 
+    vy2 = vy2 + ysecondearth*dt
+    vxj2= vxj2 + xsecondjupiter*dt 
+    vyj2 = vyj2 + ysecondjupiter*dt 
+    
+    x[i] = xearth
+    y[i] = yearth 
+    xj[i] = xjupiter 
+    yj[i] = yjupiter
+ 
+print(x) 
+ 
+plt.plot(x, y) 
+plt.plot(xj, yj) 
+
+import numpy as np
+import matplotlib.pyplot as plt
+ 
+G = 58.9639  
+M = 1
+e = 0.01671123
+E = 0.048775 
+mjupiter = (1/104.8)*M  
+mearth = (1/332950)*M 
+major_e = 1 
+major = 5.204267 
+ 
+xearth = 1.01671123  
+yearth = 0 
+xjupiter = 0 
+yjupiter = 4.950429 
+vx = 0 
+vy = np.sqrt((G*M*((2*(1-e)/major_e)-1/major_e)))
+vxjupiter = np.sqrt((G*M*((2*(1+E)/major)-1/major)))
+vyjupiter = 0
+
+   
+r =np.sqrt(xearth**2+yearth**2)
+rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2)  
+rj =np.sqrt(xjupiter**2+yjupiter**2)
+xsecondearth =  (-G*M*xearth/r**3) - (G*mjupiter*(xearth-xjupiter)/rd**3)
+ysecondearth = -G*M*yearth/r**3 - G*mjupiter*(yearth-yjupiter)/rd**3 
+xsecondjupiter = -G*M*xjupiter/rj**3 + G*mearth*(xearth-xjupiter)/rd**3
+ysecondjupiter = -G*M*yjupiter/rj**3 + G*mearth*(yearth-yjupiter)/rd**3 
+ 
+dt = 0.0001 
+time_interval = np.arange(0,1,0.001) 
+N = len(time_interval)
+
+vx2 = vx + 0.5*dt*xsecondearth 
+vy2 = vy + 0.5*dt*ysecondearth 
+vxj2 = vxjupiter + 0.5*dt*xsecondjupiter 
+vyj2 = vyjupiter + 0.5*dt*ysecondjupiter  
+ 
+x = np.zeros(N) 
+y = np.zeros(N)  
+xj = np.zeros(N) 
+yj = np.zeros(N) 
+vx1 = np.zeros(N) 
+vy1 = np.zeros(N) 
+vxj = np.zeros(N) 
+vyj = np.zeros(N)
+
+x[0] = xearth 
+y[0] = yearth 
+xj[0] = xjupiter
+yj[0] = yjupiter 
+vx1[0] =  vx 
+vy1[0] = vy 
+vxj[0] = vxjupiter 
+vyj[0] = vyjupiter
+  
+for i in range(N-1): 
+     
+    x[i+1] = x[i] + vx2*dt
+    y[i+1] = y[i] + vy2*dt
+    xj[i+1] = xj[i] + vxj2*dt 
+    yj[i+1] = yj[i] + vyj2*dt
+     
+    r =np.sqrt(x[i]**2+y[i]**2)
+    rd = np.sqrt((x[i]-xj[i])**2 +(y[i]-yj[i])**2)  
+    rj =np.sqrt(xj[i]**2+yj[i]**2)
+    xsecondearth =  (-G*M*x[i]/r**3) - (G*mjupiter*(x[i]-xj[i])/rd**3)
+    ysecondearth = -G*M*y[i]/r**3 - G*mjupiter*(y[i]-yj[i])/rd**3 
+    xsecondjupiter = -G*M*xj[i]/rj**3 + G*mearth*(x[i]-xj[i])/rd**3
+    ysecondjupiter = -G*M*yj[i]/rj**3 + G*mearth*(y[i]-yj[i])/rd**3 
+     
+    vx2 =vx2 + xsecondearth*dt 
+    vy2 =vy2 + ysecondearth*dt
+    vxj2 =vxj2 + xsecondjupiter*dt 
+    vyj2 =vyj2 + ysecondjupiter*dt 
+      
+    plt.plot(x[i], y[i])

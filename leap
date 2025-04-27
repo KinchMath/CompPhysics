@@ -79,6 +79,10 @@ print(x)
  
 plt.plot(x, y) 
 plt.plot(xj, yj) 
+plt.xlabel('xaxis')
+plt.ylabel('yaxis') 
+plt.title('orbit') 
+plt.scatter(0,0)
 
 import numpy as np
 import matplotlib.pyplot as plt

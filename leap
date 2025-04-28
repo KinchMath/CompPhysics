@@ -23,7 +23,7 @@ vyjupiter = 0
  
  
 dt = 0.0001 
-time_interval = np.arange(0,100,0.0001) 
+time_interval = np.arange(0,12,0.00013) 
 N = len(time_interval) 
  
 r = np.sqrt(xearth**2+yearth**2)
@@ -47,7 +47,7 @@ yj = np.zeros(N)
 vx1 = np.zeros(N) 
 vy1 = np.zeros(N) 
 vxj1 = np.zeros(N)
-Vyj1 = np.zeros(N)
+vyj1 = np.zeros(N)
   
 for i in range(N): 
 
@@ -69,21 +69,32 @@ for i in range(N):
     vy2 = vy2 + ysecondearth*dt
     vxj2= vxj2 + xsecondjupiter*dt 
     vyj2 = vyj2 + ysecondjupiter*dt 
+      
+    vx =vx2 - xsecondearth*dt/2 
+    vy =vy2 - ysecondearth*dt/2
+    vxj =vxj2 - xsecondjupiter*dt/2 
+    vyj =vyj2 - ysecondjupiter*dt/2
     
     x[i] = xearth
     y[i] = yearth 
     xj[i] = xjupiter 
-    yj[i] = yjupiter
+    yj[i] = yjupiter 
+    vx1[i] = vx
+    vy1[i] =  vy 
+    vxj1[i] = vxj 
+    vyj1[i] = vyj
  
-print(x)  
-
+print(x) 
  
-plt.plot(x, y) 
-plt.plot(xj, yj) 
+plt.plot(x, y, label = 'xorbit') 
+plt.plot(xj, yj, label = 'yorbit') 
+plt.legend()
+#plt.plot(x, time_interval)
 plt.xlabel('xaxis')
 plt.ylabel('yaxis') 
 plt.title('orbit') 
 plt.scatter(0,0)
+plt.grid()
 """
 
 import numpy as np

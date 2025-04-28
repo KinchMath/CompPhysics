@@ -159,7 +159,150 @@ for i in range(1, N+1):
     ysecondjupiter = -G*M*yj[i]/rj**3 + G*mearth*(y[i]-yj[i])/rd**3 
      
     vx1[i] =vx[i-1] + xsecondearth*dt 
-    vy1[i] =vy[i-1] + ysecondearth*dt
+    vy1[i] =vy[i-1] + ysecondearth*dt 
+""" 
+import numpy as np
+import matplotlib.pyplot as plt
+ 
+G = 58.9639  
+M = 1
+e = 0.01671123
+E = 0.048775 
+mjupiter = (1/104.8)*M  
+mearth = (1/332950)*M 
+major_e = 1 
+major = 5.204267 
+ 
+def x0first_order(xearth, xjupiter, yearth, yjupiter): 
+    """
+
+
+    """ 
+   
+    r =np.sqrt(xearth**2+yearth**2)
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2) 
+    xsecondearth =  (-G*M*xearth/r**3) - (G*mjupiter*(xearth-xjupiter)/rd**3)
+    
+    
+    return xsecondearth 
+ 
+def y0first_order(xearth, xjupiter, yearth, yjupiter): 
+    """
+
+
+    """
+   
+    r =np.sqrt(xearth**2+yearth**2)
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2) 
+    ysecondearth = -G*M*yearth/r**3 - G*mjupiter*(yearth-yjupiter)/rd**3 
+     
+    return ysecondearth 
+ 
+def x0jfirstorder(xearth, xjupiter, yearth, yjupiter): 
+    """
+
+    """ 
+    
+    rd = np.sqrt((xearth-xjupiter)**2 +(yearth-yjupiter)**2) 
+    rj =np.sqrt(xjupiter**2+yjupiter**2)
+    xsecondjupiter = -G*M*xjupiter/rj**3 + G*mearth*(xearth-xjupiter)/rd**3
+      
+    return xsecondjupiter
+
+def y0jfirstorder( xearth, xjupiter, yearth, yjupiter): 
+    """
+
+    """
+
+    rd = np.sqrt((xearth - xjupiter)**2 +(yearth - yjupiter)**2) 
+    rj = np.sqrt(xjupiter**2 + yjupiter**2) 
+    ysecondjupiter = -G*M*yjupiter/rj**3 + G*mearth*(yearth-yjupiter)/rd**3 
+     
+    return ysecondjupiter 
+ 
+def leap(s, t, xearth0, xjupiter0, yearth0, yjupiter0, vx0, vy0, vxj0, vyj0):
+    """
+def runge_kutta(xearth, xjupiter, yearth, yjupiter, vxearth, vyearth, vxjupiter, vyjupiter, s, t): 
+
+    -------
+    None.
+
+    """  
+    N = len(t) 
+    xearth = np.zeros(N) 
+    yearth = np.zeros(N) 
+    xjupiter = np.zeros(N) 
+    yjupiter = np.zeros(N) 
+    vx = np.zeros(N) 
+    vy = np.zeros(N)
+    vxj = np.zeros(N)
+    vyj = np.zeros(N) 
+     
+    xearth[0] = xearth0 
+    yearth[0] = yearth0
+    xjupiter[0] = xjupiter0 
+    yjupiter[0] = yjupiter0 
+    vx[0] = vx0 
+    vy[0] = vy0 
+    vxj[0] = vxj0 
+    vyj[0] = vyj0 
+     
+    vx2 = vx0 + (s/2)*x0first_order(xearth0, xjupiter0, yearth0, yjupiter0) 
+    vy2 = vy0 + (s/2)*y0first_order(xearth0, xjupiter0, yearth0, yjupiter0)
+    vxj2 = vxj0 + s/2*x0jfirstorder(xearth0, xjupiter0, yearth0, yjupiter0)
+    vyj2 = vyj0 + s/2*y0jfirstorder(xearth0, xjupiter0, yearth0, yjupiter0)
+     
+    for i in range(N-1): 
+        
+        xearth[i+1] = xearth[i] + s*vx2 
+        yearth[i+1] = yearth[i] + s*vy2
+        xjupiter[i+1] = xearth[i] + s*vxj2 
+        yjupiter[i+1] = yjupiter[i] + s*vyj2 
+        
+        vx2 = vx2 + s*x0first_order(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        vy2 = vy2 + s*y0first_order(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1])
+        vxj2 = vxj2 + s*x0jfirstorder(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        vyj2 = vyj2 + s*y0jfirstorder(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        
+        vx[i+1] = vx2 - s/2*x0first_order(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        vy[i+1] = vy2 - s/2*y0first_order(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        vxj[i+1] = vxj2 - s/2*x0jfirstorder(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        vyj[i+1] = vyj2 - s/2*y0jfirstorder(xearth[i+1],xjupiter[i+1], yearth[i+1], yjupiter[i+1]) 
+        
+          
+        return xearth, yearth, xjupiter, yjupiter, vx, vy, vxj, vyj 
+     
+x0 = 1.01671123  
+y0 = 0 
+x0jupiter = 0 
+y0jupiter = 4.950429 
+vx0 = 0 
+vy0 = np.sqrt((G*M*((2*(1-e)/major_e)-1/major_e)))
+vx0jupiter = np.sqrt((G*M*((2*(1+E)/major)-1/major)))
+vy0jupiter = 0
+
+initial_value = x0, y0, x0jupiter, y0jupiter, vx0, vy0, vx0jupiter, vy0jupiter 
+ 
+ 
+tmax = 1
+tmin = 0
+dt = int(10000*tmax)
+t = np.linspace(tmin, tmax, dt)  
+s = (tmax - tmin)/dt
+N = len(t) 
+step = (tmax -tmin)/2*N  
+check = 0
+variables1 = leap(step, t, x0, x0jupiter, y0, y0jupiter, vx0, vy0, vx0jupiter, vy0jupiter) 
+ 
+         
+plt.plot(variables1[0], variables1[1], label='earthorb') 
+plt.plot(variables1[2], variables1[3], label='jupiterorb')    
+plt.scatter(0,0, label='sun') 
+plt.grid() 
+plt.legend()
+plt.xlabel('xvalue')
+plt.ylabel('yvalue') 
+plt.title('couple orbit')
     vxj[i]=vxj[i-1] + xsecondjupiter*dt 
     vyj[i] =vyj[i-1] + ysecondjupiter*dt 
       

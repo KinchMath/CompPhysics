@@ -75,7 +75,8 @@ for i in range(N):
     xj[i] = xjupiter 
     yj[i] = yjupiter
  
-print(x) 
+print(x)  
+
  
 plt.plot(x, y) 
 plt.plot(xj, yj) 
@@ -83,6 +84,7 @@ plt.xlabel('xaxis')
 plt.ylabel('yaxis') 
 plt.title('orbit') 
 plt.scatter(0,0)
+"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -141,12 +143,12 @@ vy1[0] = vy
 vxj[0] = vxjupiter 
 vyj[0] = vyjupiter
   
-for i in range(N-1): 
+for i in range(1, N+1): 
      
-    x[i+1] = x[i] + vx2*dt
-    y[i+1] = y[i] + vy2*dt
-    xj[i+1] = xj[i] + vxj2*dt 
-    yj[i+1] = yj[i] + vyj2*dt
+    x[i] = x[i-1] + vx1[i-1]*dt
+    y[i] = y[i-1] + vy1[i-1]*dt
+    xj[i] = xj[i-1] + vxj[i-1]*dt 
+    yj[i] = yj[i-1] + vyj[i-1]*dt
      
     r =np.sqrt(x[i]**2+y[i]**2)
     rd = np.sqrt((x[i]-xj[i])**2 +(y[i]-yj[i])**2)  
@@ -156,9 +158,9 @@ for i in range(N-1):
     xsecondjupiter = -G*M*xj[i]/rj**3 + G*mearth*(x[i]-xj[i])/rd**3
     ysecondjupiter = -G*M*yj[i]/rj**3 + G*mearth*(y[i]-yj[i])/rd**3 
      
-    vx2 =vx2 + xsecondearth*dt 
-    vy2 =vy2 + ysecondearth*dt
-    vxj2 =vxj2 + xsecondjupiter*dt 
-    vyj2 =vyj2 + ysecondjupiter*dt 
+    vx1[i] =vx[i-1] + xsecondearth*dt 
+    vy1[i] =vy[i-1] + ysecondearth*dt
+    vxj[i]=vxj[i-1] + xsecondjupiter*dt 
+    vyj[i] =vyj[i-1] + ysecondjupiter*dt 
       
     plt.plot(x[i], y[i])

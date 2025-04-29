@@ -187,15 +187,22 @@ N = len(t)
 step = (tmax -tmin)/N  
 variables1 = runge_kutta(step, t, x0, x0jupiter, y0, y0jupiter, vx0, vy0, vx0jupiter, vy0jupiter) 
  
-         
-plt.plot(variables1[0], variables1[1], label='earthorb') 
-plt.plot(variables1[2], variables1[3], label='jupiterorb')    
+plt.figure()   
+axs = plt.subplot(3, 1)       
+axs[0].plt.plot(variables1[0], variables1[1], label='earthorb') 
+axs[0].plt.plot(variables1[2], variables1[3], label='jupiterorb')  
+axs[1].plt.plot(t, variables1[0]) 
+axs[2].plt.plot(t, variables1[1])   
 plt.scatter(0,0, label='sun') 
 plt.grid() 
 plt.legend()
 plt.xlabel('xvalue')
 plt.ylabel('yvalue') 
-plt.title('couple orbit')
+plt.title('couple orbit') 
+ 
+for i in range(N-1): 
+     if variables1[0]*variables[0] <= 0:
+     if variables1[1]*variables[1]
   
 #plt.figure() 
 #plt.plot(plt.plot(t,variables1[0])) 

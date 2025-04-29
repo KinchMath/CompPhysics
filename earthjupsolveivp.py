@@ -1,0 +1,98 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 28 16:15:13 2025
+
+@author: bendo
+"""
+
+import numpy as np
+import scipy as sp
+from scipy.integrate import solve_ivp
+import matplotlib.pyplot as plt
+
+
+def earthjuporb(t, coords):
+    xe, xj, ye, yj, vxe, vxj, vye, vyj = coords
+
+    # defining needed constants
+    G = 58.9639
+    M = 1
+    Mj = 10*(1/1048)*M
+    Me = (1/332950)*M
+
+    re = np.sqrt(xe**2+ye**2)
+    rj = np.sqrt(xj**2+yj**2)
+    rej = np.sqrt((xe-xj)**2+(ye-yj)**2)
+
+    # speed derivatives
+    dxedt = vxe
+    dxjdt = vxj
+    dyedt = vye
+    dyjdt = vyj
+
+    # speed derivative forms of acceleration
+    dvxedt = -G*(M*xe/((re)**3)+Mj*(xj-xe)/((rej)**3))
+    dvyedt = -G*(M*ye/((re)**3)+Mj*(yj-ye)/((rej)**3))
+    dvxjdt = -G*(M*xj/((rj)**3)-Me*(xj-xe)/((rej)**3))
+    dvyjdt = -G*(M*yj/((rj)**3)-Me*(yj-ye)/((rej)**3))
+
+    # derivatives
+    output = [dxedt, dxjdt, dyedt, dyjdt, dvxedt, dvxjdt, dvyedt, dvyjdt]
+    return output
+
+
+# starting speed conditions
+G = 58.9639
+Eccentricity = 0.01671123
+M = 1
+Aphelion = 1.016714
+vye0 = np.sqrt(G*M*(2/Aphelion-1/1))
+semimajor = 5.204267
+Aphelion2 = 4.950429
+Eccentricity2 = 0.048775
+vxj0 = np.sqrt(G*M*(2/Aphelion2-1/semimajor))
+
+# starting conditions xe,xj,ye,yj,vxe,vxj,vye,vyj
+start = [Aphelion, 0, 0, Aphelion2, 0, vxj0, vye0, 0]
+
+# time array
+t = np.linspace(0, 11000.859, 550)
+
+sol = solve_ivp(earthjuporb, t_span=[t[0], t[len(
+    t)-1]], y0=[Aphelion, 0, 0, Aphelion2, 0, vxj0, vye0, 0], method='Radau', max_step=0.01)
+
+print(sol.y[0])
+
+xesol, xjsol, yesol, yjsol = sol.y[0], sol.y[1], sol.y[2], sol.y[3]
+
+
+jmassmodifier = 10
+
+plt.subplot(1,1,1)
+plt.plot(0,0,'ro', label='sun')
+plt.plot(xesol,yesol, label="earthorb")
+plt.plot(xjsol,yjsol, label="juporb")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.xlim(-6, 6)
+plt.ylim(-6, 6)
+plt.legend()
+plt.title("Earth Jupiter Orbit ivp, {}mj".format(jmassmodifier))
+plt.show()
+
+
+plt.subplot(1,1,1)
+plt.plot(0,0,'ro', label='sun')
+plt.plot(xesol,yesol, label="earthorb")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.xlim(0, 1)
+plt.ylim(0, 1)
+plt.legend()
+plt.title("Earth Jupiter, Earth close up, Orbit ivp, {}mj".format(jmassmodifier))
+plt.show()
+
+fig = plt.figure(0,0,'ro', label='sun')
+fig.patch.set_facecolor('xkcd:mint green')
+plt.plot(fig)
+plt.show()

@@ -3,19 +3,26 @@ import matplotlib.pyplot as plt
  
 import numpy as np
 import matplotlib.pyplot as plt
- 
+
+# set up the constant GM 
 G = 58.9639  
-M = 1
+M = 1 
+
+#the individual eccentricity respectively for earth and jupiter
 e = 0.01671123
-E = 0.048775 
+E = 0.048775  
+
+# the mass value for jupiter does not significantly affect the orbit. 
+# but the initial mass is set 10 times less to notice big effect on earth orbit and its eccentricity
 mjupiter = (1/104.8)*M  
-mearth = (1/332950)*M 
+mearth = (1/332950)*M  
+
+# the semimajor axis respectively for earth and jupiter
 major_e = 1 
 major = 5.204267  
  
-# the function are defined in second derivative specifically for x and y axis 
-# for earth and jupiter
- 
+# the def function contain the second order differential of couple earth and jupiter in x and y axis. 
+# they would be implemented in the def function of runge kutta for ode solver in rk4. 
 def x0first_order(xearth, xjupiter, yearth, yjupiter, t): 
     """
 
@@ -63,7 +70,9 @@ def y0jfirstorder( xearth, xjupiter, yearth, yjupiter, t):
      
     return ysecondjupiter
     
-    
+# th runge_kutta uses rk4 which is nearly similar to the way taylor expansion occur. 
+# however rather than using derivative, it make use of step size to give ahuge decrease in every oder and finally average  
+# to get added as range for the first differential initial condition and then toward x and y.
 def runge_kutta(s, t, xearth0, xjupiter0, yearth0, yjupiter0, vx0, vy0, vxj0, vyj0):
     """
 set the runge kutta in 4 smaller size added to the step size dt
@@ -88,25 +97,31 @@ set the runge kutta in 4 smaller size added to the step size dt
     vx[0] = vx0 
     vy[0] = vy0 
     vxj[0] = vxj0 
-    vyj[0] = vyj0
-     
-    for i in range(N-1):
+    vyj[0] = vyj0 
 
+    # first example to solve for the x second differential. 
+    for i in range(N-1): 
+
+         # stepsize is added to every order in range of step i
          s1 = x0first_order(xearth[i], xjupiter[i], yearth[i], yjupiter[i], t[i]) 
          s2 = x0first_order(xearth[i]+s*s1/2, xjupiter[i]+s*s1/2, yearth[i]+s*s1/2, yjupiter[i]+s*s1/2, t[i]+ s/2)
          s3 = x0first_order(xearth[i]+s*s2/2, xjupiter[i]+s*s2/2, yearth[i]+s*s2/2,   yjupiter[i]+s*s2/2, t[i] + s/2) 
          s4 = x0first_order(xearth[i]+s3*s, xjupiter[i]+s3*s, yearth[i]+s3*s,  yjupiter[i]+s3*s, t[i] + s) 
         
-      
+         # integration for the first order is calculated using the overall added step from the order
          vx[i+1] = vx[i]+ (s/6)*(s1 +2*s2 + 2*s3 +s4)
 
+         # now the first order or velocity is used as step size order 
          s1x = vx[i]
          s2x = vx[i]+s*s1x/2 
          s3x = vx[i]+s*s2x/2 
          s4x = vx[i]+s*s3x  
-         
-         xearth[i+1] = xearth[i] + (s/6)*(s1x +2*s2x +2*s3x +s4x)
 
+         #the order velocity similar to first order integration is calculater using overall added step of the velocity order.
+         xearth[i+1] = xearth[i] + (s/6)*(s1x +2*s2x +2*s3x +s4x)
+ 
+         #The method should be the same for every second order differential equation of specific axis 
+         # y order integration
          k1 = y0first_order(xearth[i],  xjupiter[i], yearth[i], yjupiter[i], t[i])
          k2 = y0first_order(xearth[i]+s*k1/2,xjupiter[i]+s*k1/2, yearth[i]+s*k1/2,  yjupiter[i]+s*k1/2, t[i] + s/2) 
          k3 = y0first_order(xearth[i]+s*k2/2, xjupiter[i]+s*k2/2, yearth[i]+s*k2/2, yjupiter[i]+s*k2/2, t[i] + s/2) 
@@ -121,6 +136,7 @@ set the runge kutta in 4 smaller size added to the step size dt
      
          yearth[i+1] = yearth[i] + (s/6)*(k1x+ 2*k2x + 2*k3x +k4x)
 
+         # xjupiter order integration
          h1 = x0jfirstorder(xearth[i], xjupiter[i], yearth[i], yjupiter[i],t[i])
          h2 = x0jfirstorder(xearth[i]+s*h1/2, xjupiter[i]+s*h1/2, yearth[i]+s*h1/2,  yjupiter[i]+s*h1/2, t[i] + s/2) 
          h3 = x0jfirstorder(xearth[i]+s*h2/2, xjupiter[i]+s*h2/2, yearth[i]+s*h2/2,  yjupiter[i]+s*h2/2, t[i] + s/2) 
@@ -133,9 +149,10 @@ set the runge kutta in 4 smaller size added to the step size dt
          h2x = vxj[i]+(s/2)*h1x 
          h3x = vxj[i]+(s/2)*h2x 
          h4x = vxj[i]+s*h3x 
-          
+ 
          xjupiter[i+1] = xjupiter[i] + (s/6)*(h1x + 2*h2x + 2*h3x +h4x)
 
+         # yjupiter order integration
          l1 = y0jfirstorder(xearth[i], xjupiter[i], yearth[i], yjupiter[i],t[i]) 
          l2 = y0jfirstorder(xearth[i]+s*l1/2, xjupiter[i]+s*l1/2, yearth[i]+s*l1/2,  yjupiter[i]+s*l1/2, t[i] + s/2) 
          l3 = y0jfirstorder(xearth[i]+s*l2/2, xjupiter[i]+s*l2/2, yearth[i]+s*l2/2, yjupiter[i]+s*l2/2, t[i] + s/2) 
@@ -168,7 +185,10 @@ x0 = 1.01671123
 y0 = 0 
 x0jupiter = 0 
 y0jupiter = 4.950429 
-vx0 = 0 
+vx0 = 0  
+
+#the velocity chosen corespond to bringing the inital value onto the vis a vis equation for velocity 
+# in term of GM(2/r - 1/semimajor)
 vy0 = np.sqrt((G*M*((2*(1-e)/major_e)-1/major_e)))
 vx0jupiter = np.sqrt((G*M*((2*(1+E)/major)-1/major)))
 vy0jupiter = 0 
@@ -184,7 +204,9 @@ dt = int(10000*tmax)
 t = np.linspace(tmin, tmax, dt)  
 s = (tmax - tmin)/dt
 N = len(t) 
-step = (tmax -tmin)/N  
+step = (tmax -tmin)/N   
+
+#the initial is included in the runge_kutta equation
 variables1 = runge_kutta(step, t, x0, x0jupiter, y0, y0jupiter, vx0, vy0, vx0jupiter, vy0jupiter) 
  
 plt.figure()   
@@ -199,17 +221,14 @@ plt.legend()
 plt.xlabel('xvalue')
 plt.ylabel('yvalue') 
 plt.title('couple orbit') 
- 
-for i in range(N-1): 
-     if variables1[0]*variables[0] <= 0:
-     if variables1[1]*variables[1]
+
+# overall this was to test the orbit structure of the earth. The result was jupiter orbit remaining the same for incoming years
+# the only changing factor was earth orbit. The orbit does seem to be influenced by change of pertuabation effect caused by jupiter. 
+# this is showcased in the orbit slightly shifted away from its initial position or almost seem to rotate on by itself. 
+# however the key issue was that the semi major axis seems to be broaden in distantance in every year. Which would lead to  
+# earth going to jupiter orbit suggesting an unrealistic result. The way to avoid that effect is to use extremely small time step. 
+# This would lead to the code processing the runge kutta extremely slow. Even if the runge kutta showcased the pertuatiabation effect 
+# it failed to keep the semi major axis stable and the increase distance axis is still present at lower step size. 
+# check for other method with a significant progress over that issue.
   
-#plt.figure() 
-#plt.plot(plt.plot(t,variables1[0])) 
-#plt.grid 
-#plt.xlabel('xearth')
-  
-#plt.figure() 
-#plt.plot(plt.plot(t,variables1[0])) 
-#plt.grid 
-#plt.xlabel('xearth')
+

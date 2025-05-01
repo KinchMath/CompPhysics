@@ -1,0 +1,98 @@
+from scipy.integrate import odeint
+import numpy as np 
+import matplotlib.pyplot as plt
+M = 1 
+E = 0.048775 
+G = 58.9639 
+
+ 
+def func(s, t):  
+    """
+the elliptical boundary is set up in the equation of motion of jupiter
+
+    """
+    
+ 
+    x, y, Vx, Vy = s 
+    r = (x**2 + y**2)**(1/2) 
+    ysecond = -G*M*y/r**3 
+    xsecond = -G*M*x/r**3  
+    return [Vx, Vy, xsecond, ysecond]
+ 
+def earth(se, t):  
+    """
+Similar case as jupiter, the earth elliptical orbit is set in its eqaution of motion
+The def function for both Earth and Jupiter through the scipy function in odeint for ode intergartion
+
+    """
+    
+ 
+    xe, ye, Vxe, Vye = se 
+    re = (xe**2 + ye**2)**(1/2) 
+    yesecond = -G*M*ye/re**3 
+    xesecond = -G*M*xe/re**3  
+
+    # return the value for earth in velocity in x and y axis and acceleration in x and y axis. 
+    # the function or the incoming array are integrated on the return variables individually starting in their initial value like 
+    # yesecond to Vye
+    return [Vxe, Vye, xesecond, yesecond] 
+
+# set up the initial value for earth in alphelion and y = 0 since it start on the axis 
+xmax = 1.1671123 
+yeint= 0
+major_e = 1 
+e = 0.1671123 
+
+# the initial velocity make use of the vis a vis equation. note if starting the position in x axis the earth will move to y direction 
+# so the initial velocity should be in y and in xaxis it start as 0
+Vyevalue = np.sqrt((G * M*((2*(1-e)/major_e)-1/major_e)))
+Vxevalue = 0 
+
+# set the time in linspace or arange function. Arange is much more useful since smaller step size can be added to keep earth orbit stable.
+# whereas linspace in higher time duraion the step size can get bigger resulting in straight line slope rather than elliptical.
+te = np.linspace(0,1)
+
+# set all the initial in an array
+ze = [xmax, yeint, Vxevalue, Vyevalue] 
+
+#integrate the array in the odeint() 
+integralearth = odeint(earth, ze, te, rtol = 1e-6, atol = 1e-5 )
+xe = integralearth[:, 0]
+ye = integralearth[:, 1] 
+Vye = integralearth[:, 3] 
+Vxe = integralearth[:, 2]
+re = (xe**2 + ye**2)**(1/2) 
+print(xe) 
+plt.plot(xe, ye)
+
+# same cases to include initial value as Earth for jupiter
+# jupiter is starting in y direction so the velocity will start to move to x direction
+E = 0.048775
+ymin = 4.950429 
+major = 5.204267      
+Vyvalue = 0
+Vxvalue = np.sqrt((G * M*((2*(1+E)/major)-1/major)))
+xin = 0 
+z =[xin, ymin, Vxvalue, Vyvalue]
+t =np.linspace(0,11.859)  
+integral = odeint(func, z, t) 
+x = integral[:,0] 
+y= integral[:,1] 
+vx = integral[:, 2]  
+vy = integral[:, 3]
+print(x) 
+print(y) 
+
+#finally set the orbit in graph with the sun as dot in the middle.
+print(Vxvalue)
+plt.plot(x, y)  
+plt.title('orbit') 
+r =np.sqrt(x**2+y**2) 
+print(r)
+plt.xlabel('x value') 
+plt.ylabel('y value') 
+plt.scatter(0,0) 
+plt.grid()
+plt.show()  
+ 
+

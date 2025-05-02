@@ -1,50 +1,49 @@
-import math
 import numpy as np
+import math
+import time # Comparison between odeint and RK45
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
-"""
-odeint(func, y0, t)
-Parameters : 
-model– The ODE  
-y0– Initial value of Y 
-t– Time space for which we want the curve(basically the range of x) 
-"""
+# Constants
+G = 58.9639  # Gravitational constant [AU^3 / (m * yr^2)]
+M_sun = 1.0  # Solar mass
+a = 1.0  # Semi-major axis in AU
+e = 0.01671123  # Eccentricity
 
-# Constants in terms of Years, Astronomical Units, Solar Mass
-G = 58.9639
-M_Sun = 1
-Eccentricity = 0.1671123
-SemiMajAxis = 1
-Aphelion = 1.1671123
-y0 = 0
-x0 = Aphelion
-vx0 = 0
-vy0 = np.sqrt(G * M_Sun * ((1-Eccentricity)/Aphelion))
+# Initial conditions
+x0 = 1.01671123  # Aphelion distance in AU, initial x-position
+y0 = 0.0  # Start on x-axis, initial y-position
+vx0 = 0.0  # Initial x-velocity
+vy0 = np.sqrt(G * M_sun * (1 - e) / (a * (1 + e))) # Initial y-velocity
 
-def Two_Body(t , state, G, M_Sun):
-x, y, vx, vy = state
-r = np.sqrt(x**2 + y**2)
-ax = -G * M_Sun * x / r**3
-ay = -G * M_Sun * y / r**3
-return[vx,vy, ax, ay]
+# State vector: [x, y, vx, vy]
+initial_state = [x0, y0, vx0, vy0]
 
-t_end = 10000
-steps = 100000
-t = np.linspace(0, t_end, steps)
+# Simulate for 10,000 years with 100,000 steps
+t = np.linspace(0, 10000, 100000)
 
-initial_conditions = [x0, y0, vx0, vy0]
+# Define the system of ODEs
+def TwoBodyEq(state, t):
+    x, y, vx, vy = state
+    r = np.sqrt(x**2 + y**2) # Distance vector
+    ax = -G * M_sun * x / r**3 # Acceleration component for x
+    ay = -G * M_sun * y / r**3 # Acceleration component for y 
+    return [vx, vy, ax, ay]
 
-solution = odeint(two_body, initial_conditions, t, args = (G, M_Sun), rtol = 1e-9, atol = 1e-9)
+# Solve the system using odeint
+solution = odeint(TwoBodyEq, initial_state, t, atol=1e-10, rtol=1e-10)
 
-x_sol = solutiom[:, 0]
-y_sol = solution[:, 1]
+# Position values
+x_vals = solution[:, 0] # Seperate x and y values
+y_vals = solution[:, 1]
 
-plt.figure(figsize(8,8))
-plt.plot(x_sol, y_sol, label = "Earths Orbit")
-plt.plot(0, 0, 'y0', markersize=10, label="Sun")
-plt.legend()
-plt.grid()
+# Plot orbit
+plt.figure(figsize=(5, 5))
+plt.scatter(x_vals, y_vals, s=1)  # Earth's orbit
+plt.plot(0, 0, 'yo')  # Sun fixed at origin
+plt.xlabel("x [AU]")
+plt.ylabel("y [AU]")
+plt.title("Earth Orbit Over 10,000 Years")
+plt.axis("equal")
+plt.grid(True)
 plt.show()
-
-

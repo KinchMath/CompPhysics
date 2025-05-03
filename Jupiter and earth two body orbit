@@ -38,10 +38,10 @@ The def function for both Earth and Jupiter through the scipy function in odeint
     return [Vxe, Vye, xesecond, yesecond] 
 
 # set up the initial value for earth in alphelion and y = 0 since it start on the axis 
-xmax = 1.1671123 
+xmax = 1.01671123 
 yeint= 0
 major_e = 1 
-e = 0.1671123 
+e = 0.01671123 
 
 # the initial velocity make use of the vis a vis equation. note if starting the position in x axis the earth will move to y direction 
 # so the initial velocity should be in y and in xaxis it start as 0
@@ -56,14 +56,15 @@ te = np.linspace(0,1)
 ze = [xmax, yeint, Vxevalue, Vyevalue] 
 
 #integrate the array in the odeint() 
-integralearth = odeint(earth, ze, te, rtol = 1e-6, atol = 1e-5 )
+integralearth = odeint(earth, ze, te)
 xe = integralearth[:, 0]
 ye = integralearth[:, 1] 
 Vye = integralearth[:, 3] 
 Vxe = integralearth[:, 2]
 re = (xe**2 + ye**2)**(1/2) 
 print(xe) 
-plt.plot(xe, ye)
+plt.plot(xe, ye, label= 'earthorb') 
+plt.legend() 
 
 # same cases to include initial value as Earth for jupiter
 # jupiter is starting in y direction so the velocity will start to move to x direction
@@ -75,7 +76,8 @@ Vxvalue = np.sqrt((G * M*((2*(1+E)/major)-1/major)))
 xin = 0 
 z =[xin, ymin, Vxvalue, Vyvalue]
 t =np.linspace(0,11.859)  
-integral = odeint(func, z, t) 
+integral = odeint(func, z, t)  
+
 x = integral[:,0] 
 y= integral[:,1] 
 vx = integral[:, 2]  
@@ -85,14 +87,15 @@ print(y)
 
 #finally set the orbit in graph with the sun as dot in the middle.
 print(Vxvalue)
-plt.plot(x, y)  
+plt.plot(x, y, label="jupiterorb") 
+plt.scatter(0,0, label= 'sun') 
+plt.legend() 
+plt.grid(linestyle='-')  
 plt.title('orbit') 
 r =np.sqrt(x**2+y**2) 
 print(r)
 plt.xlabel('x value') 
 plt.ylabel('y value') 
-plt.scatter(0,0) 
-plt.grid()
-plt.show()  
+plt.show()
  
 

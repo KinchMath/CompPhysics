@@ -4,19 +4,23 @@ Created on Sun May  4 14:27:29 2025
 
 @author: bendo 
 """ 
-
+"""
+To change mass of jupiter for exaggeration change value of jmassmodifier
+To change initial velocity of earth for exaggeration change value of ivm
+"""
 import numpy as np 
 from scipy.integrate import solve_ivp 
 import matplotlib.pyplot as plt 
 
 # defining needed constants 
-jmassmodifier = 1 
+jmassmodifier = 1
 
 G = 4*np.pi**2 
 M = 1 
 Mj = jmassmodifier*(1/1048)*M 
 Me = (1/332950)*M 
 
+# function provided at https://stackoverflow.com/questions/18915378/rounding-to-significant-figures-in-numpy
 def round_sig(x, p):
     x = np.asarray(x)
     x_positive = np.where(np.isfinite(x) & (x != 0), np.abs(x), 10**(p-1))
@@ -222,7 +226,4 @@ plt.show()
 error was determined based off order of integration method being to 6 decimal
 places and then worst sig figs from integration values of 5 sig fig
 this shows constant semimajor as expected
-
 """ 
-
- 
